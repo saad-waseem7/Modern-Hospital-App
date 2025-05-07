@@ -1,4 +1,5 @@
-# 🌟 ModernHospital: Your All-in-One Healthcare Companion 🏥
+# 🏥 ModernHospital
+## Your All-in-One Healthcare Companion 🌟
 
 ModernHospital is a powerful yet easy-to-use web application designed to simplify healthcare operations. Whether you're an administrator, doctor, or patient, this app has everything you need to make healthcare management seamless and efficient. Built with Python (Flask) and SQL Server, ModernHospital is here to revolutionize the way healthcare works! 🚀
 
