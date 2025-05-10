@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>{{ 'Edit' if item else 'Add New' }} Medication</h2>
+
+    <form method="post"
+        action="{{ url_for('edit_pharmacy_item', id=item[0]) if item else url_for('add_pharmacy_item') }}">
+        <div class="form-group required">
+            <label for="name">Medication Name:</label>
+            <input type="text" id="name" name="name" required value="{{ item[1] if item else '' }}">
+        </div>
+
+        <div class="form-group required">
+            <label for="stock">Current Stock:</label>
+            <input type="number" id="stock" name="stock" min="0" required value="{{ item[2] if item else '0' }}">
+        </div>
+
+        <div class="form-group required">
+            <label for="threshold">Low Stock Threshold:</label>
+            <input type="number" id="threshold" name="threshold" min="1" required
+                value="{{ item[3] if item else '20' }}">
+            <small>You will receive alerts when stock falls below this number</small>
+        </div>
+
+        <div class="form-group required">
+            <label for="price">Price ($):</label>
+            <input type="number" step="0.01" min="0" id="price" name="price" required
+                value="{{ item[4] if item else '' }}">
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('pharmacy') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">{{ 'Update' if item else 'Add' }} Medication</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

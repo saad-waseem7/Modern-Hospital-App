@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-header">
+    <h2>Room Assignments - {{ room[1] }} ({{ room[2] }})</h2>
+    <div class="header-actions">
+        <a href="{{ url_for('rooms') }}" class="btn btn-secondary">Back to Rooms</a>
+        {% if session.get('role') == 'admin' %}
+        <a href="{{ url_for('add_room_assignment') }}?room_id={{ room[0] }}" class="btn btn-success">Assign Patient</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="info-grid">
+        <div class="info-item">
+            <strong>Room Number:</strong> {{ room[1] }}
+        </div>
+        <div class="info-item">
+            <strong>Type:</strong> {{ room[2] }}
+        </div>
+        <div class="info-item">
+            <strong>Status:</strong>
+            <span class="status-badge status-{{ room[3]|lower }}">{{ room[3] }}</span>
+        </div>
+        <div class="info-item">
+            <strong>Price Per Day:</strong> ${{ room[4] if room[4] else 'N/A' }}
+        </div>
+    </div>
+</div>
+
+<h3>Assignment History</h3>
+
+<div class="table-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Assigned By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assignment in assignments %}
+            <tr>
+                <td>{{ assignment[5] }}</td>
+                <td>{{ assignment[3].strftime('%Y-%m-%d') }}</td>
+                <td>{{ assignment[4].strftime('%Y-%m-%d') if assignment[4] else 'Current' }}</td>
+                <td>{{ assignment[6] if assignment[6] else 'N/A' }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('view_patient', id=assignment[1]) }}" class="btn btn-sm btn-info">View
+                        Patient</a>
+
+                    {% if session.get('role') == 'admin' and not assignment[4] %}
+                    <a href="{{ url_for('edit_room_assignment', id=assignment[0]) }}" class="btn btn-sm btn-warning">End
+                        Assignment</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if not assignments %}
+<p class="no-data">No assignment history for this room.</p>
+{% endif %}
+
+{% endblock %}

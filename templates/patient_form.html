@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>{{ action }} Patient</h2>
+
+    <form method="POST" action="">
+        <div class="form-section">
+            <h3 class="form-section-title">Personal Information</h3>
+
+            <div class="form-group required">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required value="{{ patient[1] if patient else '' }}"
+                    placeholder="Enter patient's full name">
+            </div>
+
+            <div class="form-group required">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required
+                    value="{{ patient[2].strftime('%Y-%m-%d') if patient and patient[2] else '' }}">
+                <small>Format: MM/DD/YYYY</small>
+            </div>
+
+            <div class="form-group required">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="">-- Select Gender --</option>
+                    <option value="Male" {{ 'selected' if patient and patient[3]=='Male' else '' }}>Male</option>
+                    <option value="Female" {{ 'selected' if patient and patient[3]=='Female' else '' }}>Female</option>
+                    <option value="Other" {{ 'selected' if patient and patient[3]=='Other' else '' }}>Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">Contact Details</h3>
+
+            <div class="form-group required">
+                <label for="contact">Phone Number</label>
+                <input type="text" id="contact" name="contact" required value="{{ patient[4] if patient else '' }}"
+                    placeholder="Enter contact number">
+                <small>Primary contact number for appointments and emergencies</small>
+            </div>
+
+            <div class="form-group required">
+                <label for="address">Residential Address</label>
+                <textarea id="address" name="address" rows="3" required placeholder="Enter full address">{{ patient[5]
+                    if patient else '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">Medical Information</h3>
+
+            <div class="form-group">
+                <label for="medical_history">Medical History</label>
+                <textarea id="medical_history" name="medical_history" rows="5"
+                    placeholder="Enter relevant medical history, conditions, allergies, etc.">{{ patient[6] if patient
+                    else '' }}</textarea>
+                <small>Include any pre-existing conditions, allergies, past surgeries, or other relevant health
+                    information</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('patients') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">{% if action == 'Add' %}Register Patient{% else %}Save
+                Changes{% endif %}</button>
+        </div>
+    </form>
+</div>
+
+{% if get_flashed_messages() %}
+<div class="flash-messages">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>{{ 'Edit' if room else 'Add New' }} Room</h2>
+
+    <form method="post" action="{{ url_for('edit_room', id=room[0]) if room else url_for('add_room') }}">
+        <div class="form-group required">
+            <label for="room_number">Room Number:</label>
+            <input type="text" id="room_number" name="room_number" required value="{{ room[1] if room else '' }}">
+        </div>
+
+        <div class="form-group required">
+            <label for="type">Room Type:</label>
+            <select id="type" name="type" required>
+                <option value="">Select a type</option>
+                <option value="ICU" {{ 'selected' if room and room[2]=='ICU' else '' }}>ICU</option>
+                <option value="General" {{ 'selected' if room and room[2]=='General' else '' }}>General</option>
+                <option value="Private" {{ 'selected' if room and room[2]=='Private' else '' }}>Private</option>
+                <option value="Semi-Private" {{ 'selected' if room and room[2]=='Semi-Private' else '' }}>Semi-Private
+                </option>
+                <option value="Operating" {{ 'selected' if room and room[2]=='Operating' else '' }}>Operating Room
+                </option>
+                <option value="Emergency" {{ 'selected' if room and room[2]=='Emergency' else '' }}>Emergency</option>
+            </select>
+        </div>
+
+        <div class="form-group required">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="">Select a status</option>
+                <option value="Available" {{ 'selected' if room and room[3]=='Available' else '' }}>Available</option>
+                <option value="Occupied" {{ 'selected' if room and room[3]=='Occupied' else '' }}>Occupied</option>
+                <option value="Maintenance" {{ 'selected' if room and room[3]=='Maintenance' else '' }}>Maintenance
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price Per Day ($):</label>
+            <input type="number" step="0.01" min="0" id="price" name="price" value="{{ room[4] if room else '' }}">
+            <small>Leave empty for non-billable rooms</small>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('rooms') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">{{ 'Update' if room else 'Add' }} Room</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Doctor Details</h2>
+
+<div class="doctor-info card">
+    <h3>{{ doctor[1] }}</h3>
+    <div class="info-grid">
+        <div class="info-item">
+            <strong>ID:</strong> {{ doctor[0] }}
+        </div>
+        <div class="info-item">
+            <strong>Specialty:</strong> {{ doctor[2] }}
+        </div>
+        <div class="info-item">
+            <strong>Availability:</strong> {{ doctor[3] }}
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('edit_doctor', id=doctor[0]) }}" class="btn btn-warning">Edit</a>
+        <a href="{{ url_for('doctors') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<h3>Appointments</h3>
+{% if appointments %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Patient</th>
+        <th>Date & Time</th>
+        <th>Status</th>
+    </tr>
+    {% for appointment in appointments %}
+    <tr>
+        <td>{{ appointment[0] }}</td>
+        <td>Patient ID: {{ appointment[1] }}</td>
+        <td>{{ appointment[3] }}</td>
+        <td>{{ appointment[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No appointments found.</p>
+{% endif %}
+
+<h3>Prescriptions</h3>
+{% if prescriptions %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Patient</th>
+        <th>Medication</th>
+        <th>Dosage</th>
+        <th>Date Issued</th>
+    </tr>
+    {% for prescription in prescriptions %}
+    <tr>
+        <td>{{ prescription[0] }}</td>
+        <td>Patient ID: {{ prescription[1] }}</td>
+        <td>{{ prescription[3] }}</td>
+        <td>{{ prescription[4] }}</td>
+        <td>{{ prescription[5] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No prescriptions found.</p>
+{% endif %}
+
+{% endblock %}

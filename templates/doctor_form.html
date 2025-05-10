@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>{{ action }} Doctor</h2>
+
+    <form method="POST" action="">
+        <div class="form-section">
+            <h3 class="form-section-title">Doctor Information</h3>
+
+            <div class="form-group required">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required value="{{ doctor[1] if doctor else '' }}"
+                    placeholder="Enter doctor's full name">
+            </div>
+
+            <div class="form-group required">
+                <label for="specialty">Specialty</label>
+                <input type="text" id="specialty" name="specialty" required value="{{ doctor[2] if doctor else '' }}"
+                    placeholder="Enter medical specialty">
+            </div>
+
+            <div class="form-group required">
+                <label for="availability">Availability</label>
+                <input type="text" id="availability" name="availability" required
+                    value="{{ doctor[3] if doctor else '' }}" placeholder="e.g., Mon-Fri 9am-5pm">
+                <small>Specify the days and hours when the doctor is available for appointments</small>
+            </div>
+        </div>
+
+        {% if action == 'Add' %}
+        <div class="form-section">
+            <h3 class="form-section-title">Account Information</h3>
+
+            <div class="form-group required">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Choose a username">
+                <small>Username will be used for login purposes</small>
+            </div>
+
+            <div class="form-group required">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Create a secure password">
+                <small>Choose a strong password with letters, numbers, and special characters</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <a href="{{ url_for('doctors') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">{% if action == 'Add' %}Create Doctor{% else %}Save Changes{%
+                endif %}</button>
+        </div>
+    </form>
+</div>
+
+{% if get_flashed_messages() %}
+<div class="flash-messages">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Book an Appointment</h2>
+
+    <form method="POST" action="{{ url_for('book_appointment') }}">
+        <div class="form-section">
+            <h3 class="form-section-title">Select Doctor</h3>
+
+            <div class="form-group required">
+                <label for="doctor_id">Doctor</label>
+                <select id="doctor_id" name="doctor_id" required onchange="updateAvailability()">
+                    <option value="">-- Select a Doctor --</option>
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor[0] }}" data-availability="{{ doctor[3] }}">
+                        Dr. {{ doctor[1] }} - {{ doctor[2] }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <small>Choose the doctor you would like to see</small>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">Appointment Details</h3>
+
+            <div class="form-group required">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required min="{{ today }}">
+                <small>Select a date for your appointment</small>
+            </div>
+
+            <div class="form-group required">
+                <label for="time">Time</label>
+                <select id="time" name="time" required>
+                    <option value="">-- Select Time Slot --</option>
+                    <option value="09:00">9:00 AM</option>
+                    <option value="09:30">9:30 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="10:30">10:30 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="11:30">11:30 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="12:30">12:30 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="14:30">2:30 PM</option>
+                    <option value="15:00">3:00 PM</option>
+                    <option value="15:30">3:30 PM</option>
+                    <option value="16:00">4:00 PM</option>
+                    <option value="16:30">4:30 PM</option>
+                </select>
+                <small id="availability-info" class="availability-info">Doctor's availability will appear here when
+                    selected.</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('appointments') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">Schedule Appointment</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
+
+    function updateAvailability() {
+        const doctorSelect = document.getElementById('doctor_id');
+        const availabilityInfo = document.getElementById('availability-info');
+        const timeSelect = document.getElementById('time');
+
+        // Reset time options
+        for (let i = 0; i < timeSelect.options.length; i++) {
+            timeSelect.options[i].disabled = false;
+        }
+
+        if (doctorSelect.selectedIndex > 0) {
+            const selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
+            const availability = selectedOption.getAttribute('data-availability');
+
+            availabilityInfo.textContent = 'Availability: ' + availability;
+            availabilityInfo.style.color = '#28a745'; // Success green color
+
+            // Parse availability and disable unavailable time slots
+            // This is a simple implementation - in a real app, you would have more sophisticated
+            // availability checking logic
+            if (availability.includes('Mon-Fri')) {
+                // Doctor works weekdays
+                const dateInput = document.getElementById('date');
+                const date = new Date(dateInput.value);
+                const dayOfWeek = date.getDay(); // 0 is Sunday, 6 is Saturday
+
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    // Weekend - disable all times
+                    for (let i = 1; i < timeSelect.options.length; i++) {
+                        timeSelect.options[i].disabled = true;
+                    }
+
+                    availabilityInfo.textContent = 'Selected doctor is not available on weekends.';
+                    availabilityInfo.style.color = '#dc3545'; // Danger red color
+                }
+            }
+
+            // Parse specific time windows from availability
+            if (availability.includes('9am-5pm')) {
+                // Enable 9am-5pm slots
+                for (let i = 1; i < timeSelect.options.length; i++) {
+                    const timeValue = timeSelect.options[i].value;
+                    const hour = parseInt(timeValue.split(':')[0]);
+
+                    if (hour < 9 || hour >= 17) {
+                        timeSelect.options[i].disabled = true;
+                    }
+                }
+            }
+        } else {
+            availabilityInfo.textContent = 'Doctor\'s availability will appear here when selected.';
+            availabilityInfo.style.color = '#6c757d'; // Secondary text color
+        }
+    }
+
+    // Update availability when date changes
+    document.getElementById('date').addEventListener('change', updateAvailability);
+</script>
+{% endblock %}
