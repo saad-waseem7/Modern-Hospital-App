@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Insurance Claims</h2>
+<table>
+    <tr>
+        <th>Claim ID</th>
+        <th>Patient ID</th>
+        <th>Insurer</th>
+        <th>Policy Number</th>
+        <th>Claim Status</th>
+    </tr>
+    {% for claim in rows %}
+    <tr>
+        <td>{{ claim[0] }}</td>
+        <td>{{ claim[1] }}</td>
+        <td>{{ claim[2] }}</td>
+        <td>{{ claim[3] }}</td>
+        <td>{{ claim[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

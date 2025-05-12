@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Feedback</h2>
+<table>
+    <tr>
+        <th>Feedback ID</th>
+        <th>Patient ID</th>
+        <th>Doctor ID</th>
+        <th>Rating</th>
+        <th>Comments</th>
+    </tr>
+    {% for feedback in rows %}
+    <tr>
+        <td>{{ feedback[0] }}</td>
+        <td>{{ feedback[1] }}</td>
+        <td>{{ feedback[2] }}</td>
+        <td>{{ feedback[3] }}</td>
+        <td>{{ feedback[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

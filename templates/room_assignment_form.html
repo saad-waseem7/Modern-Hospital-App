@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    {% if action == 'Add' %}
+    <h2>Assign Patient to Room</h2>
+    {% else %}
+    <h2>End Room Assignment</h2>
+    {% endif %}
+
+    <form method="post"
+        action="{{ url_for('edit_room_assignment', id=assignment[0]) if assignment else url_for('add_room_assignment') }}">
+        {% if action == 'Add' %}
+        <div class="form-group required">
+            <label for="patient_id">Patient:</label>
+            <select id="patient_id" name="patient_id" required>
+                <option value="">Select a patient</option>
+                {% for patient in patients %}
+                <option value="{{ patient[0] }}">{{ patient[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group required">
+            <label for="room_id">Room:</label>
+            <select id="room_id" name="room_id" required {% if request.args.get('room_id') %}disabled{% endif %}>
+                <option value="">Select a room</option>
+                {% for room_item in rooms %}
+                <option value="{{ room_item[0] }}" {% if request.args.get('room_id')==room_item[0]|string %}selected{%
+                    endif %}>
+                    {{ room_item[1] }}
+                </option>
+                {% endfor %}
+            </select>
+            {% if request.args.get('room_id') %}
+            <input type="hidden" name="room_id" value="{{ request.args.get('room_id') }}">
+            {% endif %}
+        </div>
+
+        <div class="form-group required">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" required value="{{ today }}">
+        </div>
+
+        <div class="form-group">
+            <label for="end_date">End Date (Optional):</label>
+            <input type="date" id="end_date" name="end_date">
+            <small>Leave blank for indefinite assignment</small>
+        </div>
+        {% else %}
+        <div class="info-card">
+            <div class="info-item">
+                <strong>Patient:</strong> {{ patient[1] }}
+            </div>
+            <div class="info-item">
+                <strong>Room:</strong> {{ room[1] }}
+            </div>
+            <div class="info-item">
+                <strong>Assignment Started:</strong> {{ assignment[3].strftime('%Y-%m-%d') if assignment[3] else 'N/A'
+                }}
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" required value="{{ end_date }}">
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <a href="{{ url_for('room_assignments', room_id=room[0]) if room else url_for('rooms') }}"
+                class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success">
+                {% if action == 'Add' %}
+                Assign Patient
+                {% else %}
+                End Assignment
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .info-card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+    }
+
+    .info-item {
+        margin-bottom: 10px;
+    }
+
+    .info-item strong {
+        display: inline-block;
+        min-width: 150px;
+        color: #495057;
+    }
+</style>
+{% endblock %}

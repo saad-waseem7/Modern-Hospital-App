@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Hospital Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Modern Hospital</h1>
+            <button class="mobile-nav-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav>
+            <ul id="mainMenu">
+                {% if session.get('user_id') %}
+                {% if session.get('role') == 'admin' %}
+                <!-- Admin Navigation - Simplified structure -->
+                <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+
+                <!-- Core Resources -->
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle"><i class="fas fa-users"></i> People</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('patients') }}">Patients</a></li>
+                        <li><a href="{{ url_for('doctors') }}">Doctors</a></li>
+                        <li><a href="{{ url_for('staff') }}">Staff</a></li>
+                        <li><a href="{{ url_for('admin_users') }}">User Accounts</a></li>
+                    </ul>
+                </li>
+
+                <!-- Medical -->
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle"><i class="fas fa-stethoscope"></i> Medical</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('appointments') }}">Appointments</a></li>
+                        <li><a href="{{ url_for('prescriptions') }}">Prescriptions</a></li>
+                        <li><a href="{{ url_for('lab_reports') }}">Lab Reports</a></li>
+                        <li><a href="{{ url_for('pharmacy') }}">Pharmacy</a></li>
+                    </ul>
+                </li>
+
+                <!-- Facilities & Finance -->
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle"><i class="fas fa-hospital"></i> Operations</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('rooms') }}">Rooms</a></li>
+                        <li><a href="{{ url_for('emergency') }}">Emergency</a></li>
+                        <li><a href="{{ url_for('bills') }}">Bills</a></li>
+                        <li><a href="{{ url_for('insurance') }}">Insurance</a></li>
+                        <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
+                    </ul>
+                </li>
+
+                {% elif session.get('role') == 'doctor' %}
+                <!-- Doctor Navigation -->
+                <li><a href="{{ url_for('doctor_dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('patients') }}"><i class="fas fa-user-injured"></i> My Patients</a></li>
+                <li><a href="{{ url_for('appointments') }}"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="{{ url_for('prescriptions') }}"><i class="fas fa-prescription"></i> Prescriptions</a></li>
+                <li><a href="{{ url_for('lab_reports') }}"><i class="fas fa-vial"></i> Lab Reports</a></li>
+
+                {% elif session.get('role') == 'patient' %}
+                <!-- Patient Navigation -->
+                <li><a href="{{ url_for('patient_dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('doctors') }}"><i class="fas fa-user-md"></i> Find Doctors</a></li>
+                <li><a href="{{ url_for('book_appointment') }}"><i class="fas fa-calendar-plus"></i> Book
+                        Appointment</a></li>
+                <li><a href="{{ url_for('appointments') }}"><i class="fas fa-calendar-check"></i> My Appointments</a>
+                </li>
+                <li><a href="{{ url_for('bills') }}"><i class="fas fa-file-invoice-dollar"></i> My Bills</a></li>
+                {% endif %}
+
+                <!-- User profile and logout - shown for all logged in users -->
+                <li class="nav-right">
+                    <a href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+                <li class="nav-username">
+                    <span><i class="fas fa-user-circle"></i> {{ session.get('username') }}</span>
+                </li>
+                {% else %}
+                <!-- Not logged in - show only login/register -->
+                <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                <li><a href="{{ url_for('register') }}"><i class="fas fa-user-plus"></i> Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% if get_flashed_messages() %}
+        <div class="flash-messages">
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{ category }}">{{ message | safe }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Modern Hospital Management System</p>
+    </footer>
+
+    <script>
+        // Enhanced mobile-friendly menu and dropdown functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mainMenu = document.getElementById('mainMenu');
+
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function () {
+                    mainMenu.classList.toggle('active');
+                });
+            }
+
+            // Dropdown functionality
+            var dropdowns = document.querySelectorAll('.dropdown-toggle');
+
+            dropdowns.forEach(function (dropdown) {
+                dropdown.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    this.parentNode.classList.toggle('active');
+                });
+            });
+
+            // Close the dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.matches('.dropdown-toggle') && !e.target.closest('.dropdown-toggle') && !e.target.matches('.mobile-nav-toggle')) {
+                    // Close dropdowns
+                    dropdowns.forEach(function (dropdown) {
+                        dropdown.parentNode.classList.remove('active');
+                    });
+
+                    // If clicking outside completely, close mobile menu
+                    if (!e.target.closest('nav')) {
+                        mainMenu.classList.remove('active');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

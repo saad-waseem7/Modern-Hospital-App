@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="doctor-dashboard">
+    <div class="dashboard-header">
+        <h2>Doctor Dashboard</h2>
+        <p>Welcome, Dr. {{ doctor[1] }}! Here you can manage your patient appointments and medical records.</p>
+    </div>
+
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-label">Today's Appointments</div>
+            <div class="stat-value">{{ active_today_count }}</div>
+            <a href="{{ url_for('appointments') }}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Upcoming Appointments</div>
+            <div class="stat-value">{{ active_upcoming_count }}</div>
+            <a href="{{ url_for('appointments') }}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Total Patients</div>
+            <div class="stat-value">{{ recent_patients|length }}</div>
+            <a href="{{ url_for('patients') }}" class="btn btn-sm btn-primary">View Patients</a>
+        </div>
+    </div>
+
+    <div id="today-appointments" class="dashboard-section">
+        <h3>Today's Appointments</h3>
+        {% if today_appointments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in today_appointments %}
+                <tr class="{% if appointment[4] == 'Cancelled' %}cancelled-appointment{% endif %}">
+                    <td>{{ appointment.PatientName }}</td>
+                    <td>{{ appointment[3].strftime('%H:%M') if appointment[3] else '' }}</td>
+                    <td>
+                        <span class="status-badge status-{{ appointment[4]|lower }}">
+                            {{ appointment[4] }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if appointment[4] == 'Scheduled' %}
+                        <a href="{{ url_for('complete_appointment', id=appointment[0]) }}"
+                            class="btn btn-sm btn-success">Complete</a>
+                        <a href="{{ url_for('edit_appointment', id=appointment[0]) }}"
+                            class="btn btn-sm btn-warning">Update</a>
+                        {% elif appointment[4] == 'Cancelled' %}
+                        <span class="cancelled-text">Cancelled</span>
+                        {% endif %}
+                        <a href="{{ url_for('view_patient', id=appointment[1]) }}" class="btn btn-sm btn-info">View
+                            Patient</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No appointments scheduled for today.</p>
+        {% endif %}
+    </div>
+
+    <div id="upcoming-appointments" class="dashboard-section">
+        <h3>Upcoming Appointments</h3>
+        {% if upcoming_appointments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in upcoming_appointments %}
+                <tr class="{% if appointment[4] == 'Cancelled' %}cancelled-appointment{% endif %}">
+                    <td>{{ appointment.PatientName }}</td>
+                    <td>{{ appointment[3] }}</td>
+                    <td>
+                        <span class="status-badge status-{{ appointment[4]|lower }}">
+                            {{ appointment[4] }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if appointment[4] == 'Scheduled' %}
+                        <a href="{{ url_for('edit_appointment', id=appointment[0]) }}"
+                            class="btn btn-sm btn-warning">Update</a>
+                        {% elif appointment[4] == 'Cancelled' %}
+                        <span class="cancelled-text">Cancelled</span>
+                        {% endif %}
+                        <a href="{{ url_for('view_patient', id=appointment[1]) }}" class="btn btn-sm btn-info">View
+                            Patient</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No upcoming appointments scheduled.</p>
+        {% endif %}
+    </div>
+
+    <div class="dashboard-section">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+            <a href="{{ url_for('edit_doctor', id=doctor[0]) }}" class="btn btn-info">Update My Information</a>
+            <a href="{{ url_for('patients') }}" class="btn btn-primary">View My Patients</a>
+            <a href="{{ url_for('prescriptions') }}" class="btn btn-success">Manage Prescriptions</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
